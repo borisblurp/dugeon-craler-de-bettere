@@ -3,7 +3,6 @@ namespace SpriteKind {
     export const portal = SpriteKind.create()
 }
 function LevelStart () {
-    level = 0
     ridder_ofzo = sprites.create(assets.image`back2`, SpriteKind.Player)
     statusbar = statusbars.create(15, 5, StatusBarKind.Health)
     hptext = 3
@@ -214,27 +213,30 @@ function LevelStart () {
     pause(500)
     music.playMelody("E B C5 A B G A F ", 120)
 }
-controller.combos.attachCombo("BBABB", function () {
-    take_damage()
-})
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     ridder_ofzo.setImage(assets.image`back3`)
     controller.moveSprite(ridder_ofzo, 50, 50)
 })
-controller.combos.attachCombo("AABAA", function () {
-    statusbar.value = 0
-})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (ridder_ofzo.image == assets.image`back3`) {
-        projectile = sprites.createProjectileFromSprite(assets.image`up pijl`, ridder_ofzo, 0, -50)
-    } else if (ridder_ofzo.image == assets.image`front`) {
-        projectile = sprites.createProjectileFromSprite(assets.image`down pijl`, ridder_ofzo, 0, 50)
-    } else if (ridder_ofzo.image == assets.image`right`) {
-        projectile = sprites.createProjectileFromSprite(assets.image`pijl rechts`, ridder_ofzo, 0, -50)
-    } else if (ridder_ofzo.image == assets.image`left`) {
-        projectile = sprites.createProjectileFromSprite(assets.image`pijl links`, ridder_ofzo, 0, -50)
-    }
-    projectile.follow(enemy_ofz)
+    projectile = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . c . . . . . . . 
+        . . . . . . . c c c . . . . . . 
+        . . . . . . c c c c c . . . . . 
+        . . . . . c c c c c c c . . . . 
+        . . . . c c c b d b c c c . . . 
+        . . . . . . . b d b . . . . . . 
+        . . . . . . . b d b . . . . . . 
+        . . . . . . . b d b . . . . . . 
+        . . . . . . . b d b . . . . . . 
+        . . . . . . . b d b . . . . . . 
+        . . . . . . . b d b . . . . . . 
+        . . . . . . . b d b . . . . . . 
+        . . . . . . c b d b c . . . . . 
+        . . . . . c c c c c c c . . . . 
+        . . . . . c c . . . c c . . . . 
+        `, ridder_ofzo, 0, 300)
+    controller.moveSprite(projectile, 300, 300)
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     ridder_ofzo.setImage(assets.image`left`)
@@ -253,8 +255,13 @@ function take_damage () {
 }
 function next_level () {
     if (level == 1) {
+        tiles.setTilemap(tilemap`level9`)
+        LevelStart()
+    } else if (level == 2) {
         tiles.setTilemap(tilemap`level3`)
         LevelStart()
+    } else if (false) {
+    	
     }
 }
 statusbars.onZero(StatusBarKind.Health, function (status) {
@@ -441,9 +448,11 @@ let ridder_ofzo: Sprite = null
 let level = 0
 scene.setBackgroundImage(assets.image`back`)
 tiles.setTilemap(tilemap`level1`)
+level = 0
 LevelStart()
 forever(function () {
     if (ridder_ofzo.overlapsWith(portal)) {
+        ridder_ofzo.destroy()
         portal.destroy()
         level += 1
         next_level()
